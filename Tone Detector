@@ -1,0 +1,47 @@
+import re
+
+# Simple tone detector: counts positive vs negative words
+POSITIVE_WORDS = ["happy", "joy", "love", "excited", "good"]
+NEGATIVE_WORDS = ["sad", "angry", "hate", "bad", "upset"]
+
+def detect_tone(text):
+    if not text:
+        return "Neutral"
+    text = text.lower()
+    pos_count = sum(word in text for word in POSITIVE_WORDS)
+    neg_count = sum(word in text for word in NEGATIVE_WORDS)
+    if pos_count > neg_count:
+        return "Positive"
+    elif neg_count > pos_count:
+        return "Negative"
+    return "Neutral"
+
+# Simple syllable counter (rough estimation)
+def count_syllables(word):
+    word = word.lower()
+    word = re.sub(r'[^a-z]', '', word)
+    if len(word) == 0:
+        return 0
+    vowels = "aeiouy"
+    count = 0
+    prev_char_was_vowel = False
+    for char in word:
+        if char in vowels:
+            if not prev_char_was_vowel:
+                count += 1
+            prev_char_was_vowel = True
+        else:
+            prev_char_was_vowel = False
+    # Remove silent 'e' at end
+    if word.endswith("e") and count > 1:
+        count -= 1
+    return count
+
+# Example usage
+text_input = "I am so happy today!"
+tone = detect_tone(text_input)
+syllables = sum(count_syllables(word) for word in text_input.split())
+
+print(f"Text: {text_input}")
+print(f"Detected Tone: {tone}")
+print(f"Total Syllables: {syllables}")
